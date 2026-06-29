@@ -1,10 +1,8 @@
 from fastapi import FastAPI
-from app.routes import clientes
+from routes.clients import router as clients_router
+from routes.products import router as products_router
 
-app = FastAPI()
+app = FastAPI(title="Campofacil API")
 
-app.include_router(clientes.router)
-
-@app.get("/")
-def home():
-    return {"msg": "CampoFácil rodando"}
+app.include_router(clients_router)
+app.include_router(products_router)
