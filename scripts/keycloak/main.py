@@ -1,41 +1,12 @@
-import psycopg2
 import time
 import requests
 
 from env_vars import (
-    db_name,
-    db_user,
-    db_password,
-    db_host,
-    db_port,
     keycloak_host,
     keycloak_realm,
     keycloak_admin_user,
     keycloak_admin_password,
 )
-
-
-def create_schema_for_keycloak():
-
-    # Connect to the PostgreSQL database
-    conn = psycopg2.connect(
-        dbname=db_name,
-        user=db_user,
-        password=db_password,
-        host=db_host,
-        port=db_port,
-    )
-    conn.autocommit = True
-
-    try:
-        with conn.cursor() as cursor:
-            # Create the keycloak schema if it doesn't exist
-            cursor.execute("CREATE SCHEMA IF NOT EXISTS keycloak;")
-            print("Schema 'keycloak' created successfully (if it did not exist).")
-    except Exception as e:
-        print(f"Error creating schema: {e}")
-    finally:
-        conn.close()
 
 
 def wait_for_keycloak_to_start():
@@ -209,7 +180,6 @@ def create_user(token, username):
 
 
 def main():
-    create_schema_for_keycloak()
     wait_for_keycloak_to_start()
     configure_keycloak()
 

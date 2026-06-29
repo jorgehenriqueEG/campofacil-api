@@ -16,6 +16,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  campofacil-keycloak-schema:
+    container_name: campofacil-keycloak-schema
+    image: pgvector/pgvector:pg17
+    entrypoint: >
+      sh -c "psql -h campofacil-db -U postgres -d campofacil
+      -c 'CREATE SCHEMA IF NOT EXISTS keycloak;'"
+    environment:
+      PGPASSWORD: postgres
+    depends_on:
+      campofacil-db:
+        condition: service_healthy
   campofacil-api-keycloak:
     container_name: campofacil-api-keycloak
     image: keycloak/keycloak:26.5
@@ -31,8 +42,8 @@ services:
       - "8888:8080"
     command: start-dev
     depends_on:
-      - campofacil-db
-      - campofacil-configuration
+      campofacil-keycloak-schema:
+        condition: service_completed_successfully
   campofacil-configuration:
     container_name: campofacil-configuration
     image: python:3.11-slim-buster
