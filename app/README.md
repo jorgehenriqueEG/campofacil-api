@@ -46,6 +46,15 @@ pip install poetry
 poetry install
 ```
 
+for windows
+
+```bash
+python -m venv venv
+source venv/Scripts/activate
+pip install poetry
+poetry install
+```
+
 **4. Apply database migrations**
 
 ```bash
