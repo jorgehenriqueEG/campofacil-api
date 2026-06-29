@@ -180,6 +180,33 @@ def configure_keycloak():
     assign_manage_users_role(token, client_id)
     remove_attribute_last_name(token)
 
+    username = "admin"
+    create_user(token, username)
+
+
+def create_user(token, username):
+    print("Creating admin user...")
+    url = f"{keycloak_host}/admin/realms/{keycloak_realm}/users"
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    data = {
+        "username": username,
+        "enabled": True,
+        "email": f"{username}@example.com",
+        "emailVerified": True,
+        "firstName": f"{username.capitalize()}",
+        "lastName": "Test",
+        "credentials": [
+            {
+                "type": "password",
+                "value": username,
+                "temporary": False,
+            }
+        ],
+    }
+    response = requests.post(url, json=data, headers=headers)
+    analyze_response(response)
+    print("Admin user created successfully.")
+
 
 def main():
     create_schema_for_keycloak()
