@@ -1,16 +1,53 @@
+version: '3.9'
+
 services:
-  db:
-    image: postgres:16
+  campofacil-db:
     container_name: campofacil-db
-    restart: always
+    image: pgvector/pgvector:pg17
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
       POSTGRES_DB: campofacil
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: 'UTC'
     ports:
-      - "5432:5432"
+      - '5555:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - campofacil_api_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  campofacil-api-keycloak:
+    container_name: campofacil-api-keycloak
+    image: keycloak/keycloak:26.5
+    environment:
+      KEYCLOAK_ADMIN: keycloak
+      KEYCLOAK_ADMIN_PASSWORD: keycloak
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://campofacil-db:5555/campofacil
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_DB_SCHEMA: keycloak
+    ports:
+      - "8888:8080"
+    command: start-dev
+    depends_on:
+      - campofacil-db
+      - campofacil-configuration
+  campofacil-configuration:
+    container_name: campofacil-configuration
+    image: python:3.11-slim-buster
+    volumes:
+      - "./scripts/keycloak/main.py/:/main.py"
+      - "./scripts/keycloak/env_vars.py/:/env_vars.py"
+      - "./scripts/keycloak/.env/:/.env"
+      - "./scripts/keycloak/requirements.txt/:/requirements.txt"
+    entrypoint: sh -c "pip install -r requirements.txt;python main.py"
+    network_mode: host
+    depends_on:
+      - campofacil-db
 
 volumes:
-  postgres_data:
+  campofacil_api_data:
+    driver: local
