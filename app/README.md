@@ -116,4 +116,4 @@ poetry run alembic current
 poetry run alembic history
 ```
 
-> After creating a new SQLAlchemy model, import it in `src/campofacil_be/models/__init__.py` before running autogenerate.
+> After creating a new SQLAlchemy model, import it in `app/models/__init__.py` before running autogenerate.
