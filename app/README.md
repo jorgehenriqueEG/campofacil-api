@@ -61,6 +61,42 @@ poetry run fastapi dev main.py
 API available at http://localhost:8000  
 Interactive docs at http://localhost:8000/docs
 
+## Authentication
+
+All API endpoints require a Bearer token issued by Keycloak. Use `POST /auth/token` to obtain one without interacting with Keycloak directly.
+
+**Seeded user** (created automatically on first `docker compose up`):
+
+| Field    | Value   |
+| -------- | ------- |
+| Username | `admin` |
+| Password | `admin` |
+
+**Get a token:**
+
+```bash
+curl -s -X POST http://localhost:8000/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin"}'
+```
+
+Response:
+
+```json
+{
+  "access_token": "eyJ...",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+}
+```
+
+**Call a protected endpoint:**
+
+```bash
+curl http://localhost:8000/clients/ \
+  -H "Authorization: Bearer eyJ..."
+```
+
 ## Database migrations
 
 All commands run from `campofacil-be/`. Alembic reads `DATABASE_URL` from `.env` automatically.
