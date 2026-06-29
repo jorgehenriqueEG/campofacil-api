@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   campofacil-db:
     container_name: campofacil-db
@@ -25,7 +23,7 @@ services:
       KEYCLOAK_ADMIN: keycloak
       KEYCLOAK_ADMIN_PASSWORD: keycloak
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://campofacil-db:5555/campofacil
+      KC_DB_URL: jdbc:postgresql://campofacil-db:5432/campofacil
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: postgres
       KC_DB_SCHEMA: keycloak
